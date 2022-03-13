@@ -4,7 +4,7 @@ from product.models import Product, ProductVariant, Variant
     
 class ProductView(ListView):
     template_name = 'products/list.html'
-    paginate_by = 10
+    paginate_by = 2
     
     def get_queryset(self):
         filter_string = {}
