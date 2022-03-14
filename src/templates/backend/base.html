@@ -24,6 +24,7 @@
     <link href="{% static '/js/chunk-vendors.js' %}" rel="preload" as="script">
     <link href="{% static '/css/chunk-vendors.css' %}" rel="stylesheet">
     <link href="{% static '/css/app.css' %}" rel="stylesheet">
+    {% block style %}{% endblock style %}
 </head>
 <body id="page-top">
 <div id="wrapper">
@@ -83,5 +84,6 @@
 
 <script type="text/javascript" src="{% static '/js/chunk-vendors.js' %}"></script>
 <script type="text/javascript" src="{% static '/js/app.js' %}"></script>
+{% block script %}{% endblock script %}
 </body>
 </html>

@@ -1,7 +1,9 @@
 {% extends 'backend/base.html' %}
 {% load url_replace %}
 {% block title %} Product List {% endblock %}
-
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock style %}
 {% block content %}
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -16,10 +18,14 @@
                 <input type="text" name="title" placeholder="Product Title" class="form-control" {% if filter_title %}value="{{ filter_title }}"{% endif %} >
             </div>
             <div class="col-md-2">
-                <select name="variant" id="" class="form-control">
-                    <option selected disabled>--Select A Variant--</option>
-                    {% for variant in product_variants  %}
-                      <option value="{{ variant }}" {% if filter_variant == variant %}selected{% endif %} >{{ variant }}</option>
+                <select name="variant" id="variant_dropdown" class="form-control">
+                    <option value="" selected disabled>--Select A Variant--</option>
+                    {% for var in variants  %}
+                        <optgroup label="{{ var.title }}">
+                            {% for product_variant in var.variant_variants.all %}
+                                <option value="{{ product_variant.variant_title }}" {% if filter_variant == product_variant.variant_title %}selected{% endif %} >{{ product_variant.variant_title }}</option> 
+                            {% endfor %}
+                        </optgroup>
                     {% endfor %}
                 </select>
             </div>
@@ -123,3 +129,14 @@
     </div>
 </div>
 {% endblock %}
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $("optgroup option").each(function() {
+            $(this).siblings('[value="'+ this.value +'"]').remove();
+        });
+        $("#variant_dropdown").val("{{ filter_variant }}");
+        $("#variant_dropdown").select2({});
+
+    </script>
+{% endblock script %}

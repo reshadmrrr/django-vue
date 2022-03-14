@@ -35,7 +35,7 @@ class ProductView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['product'] = True
-        context['product_variants'] = ProductVariant.objects.filter(variant__active=True).select_related("variant").values_list('variant_title', flat=True).distinct()
+        context['variants'] = Variant.objects.prefetch_related("variant_variants").filter(active=True)
         for key in self.request.GET:
             if len(self.request.GET.get(key)):
                 context[f'filter_{key}'] = self.request.GET.get(key)
