@@ -1,5 +1,5 @@
 {% extends 'backend/base.html' %}
-
+{% load url_replace %}
 {% block title %} Product List {% endblock %}
 
 {% block content %}
@@ -13,13 +13,13 @@
     <form action="" method="get" class="card-header">
         <div class="form-row justify-content-between">
             <div class="col-md-2">
-                <input type="text" name="title" placeholder="Product Title" class="form-control">
+                <input type="text" name="title" placeholder="Product Title" class="form-control" {% if filter_title %}value="{{ filter_title }}"{% endif %} >
             </div>
             <div class="col-md-2">
                 <select name="variant" id="" class="form-control">
                     <option selected disabled>--Select A Variant--</option>
                     {% for variant in product_variants  %}
-                      <option value="{{ variant.id }}">{{ variant.variant_title }}</option>
+                      <option value="{{ variant }}" {% if filter_variant == variant %}selected{% endif %} >{{ variant }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -29,13 +29,12 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">Price Range</span>
                     </div>
-                    <input type="text" name="price_from" aria-label="First name" placeholder="From"
-                           class="form-control">
-                    <input type="text" name="price_to" aria-label="Last name" placeholder="To" class="form-control">
+                    <input type="text" name="price_from" aria-label="First name" placeholder="From" {% if filter_price_from %} value="{{ filter_price_from }}" {% endif %}  class="form-control">
+                    <input type="text" name="price_to" aria-label="Last name" placeholder="To" {% if filter_price_to %} value="{{ filter_price_to }}" {% endif %}  class="form-control">
                 </div>
             </div>
             <div class="col-md-2">
-                <input type="date" name="date" placeholder="Date" class="form-control">
+                <input type="date" name="date" placeholder="Date" class="form-control" {% if filter_date %} value="{{ filter_date }}" {% endif %}  >
             </div>
             <div class="col-md-1">
                 <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
@@ -100,23 +99,25 @@
                 <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} out of {{ page_obj.paginator.count }}</p>
             </div>
             <div class="col-md-2">
+                {% if page_obj.has_other_pages %}
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-end">
                      {% if page_obj.has_previous %}
                      <li class="page-item">
-                        <a class="page-link" aria-label="Previous" href="?page={{ page_obj.previous_page_number }}" ><span aria-hidden="true">&laquo;</span></a>
+                        <a class="page-link" aria-label="Previous" href="?{% url_replace page=page_obj.previous_page_number %}" ><span aria-hidden="true">&laquo;</span></a>
                       </li>
                      {% endif %}
                      {% for i in page_obj.paginator.page_range %}
-                     <li class="page-item {% if page_obj.number == i %}active{% endif %}"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                     <li class="page-item {% if page_obj.number == i %}active{% endif %}"><a class="page-link" href="?{% url_replace page=i %}" >{{ i }}</a></li>
                      {% endfor %}
                      {% if page_obj.has_next %}
                      <li class="page-item">
-                        <a class="page-link active" aria-label="Next" href="?page={{ page_obj.next_page_number }}" ><span aria-hidden="true">&raquo;</span></a>
+                        <a class="page-link active" aria-label="Next" href="?{% url_replace page=page_obj.next_page_number %}" ><span aria-hidden="true">&raquo;</span></a>
                       </li>
                      {% endif %}
                     </ul>
                   </nav>
+                {% endif %}
             </div>
         </div>
     </div>
