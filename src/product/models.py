@@ -1,5 +1,9 @@
 from django.db import models
 from config.g_model import TimeStampMixin
+import random
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.utils.text import slugify
 
 
 # Create your models here.
@@ -36,3 +40,18 @@ class ProductVariantPrice(TimeStampMixin):
     price = models.FloatField()
     stock = models.FloatField()
     product = models.ForeignKey(Product, related_name="product_variant_prices", on_delete=models.CASCADE)
+    
+    
+def slugify_sku(sku):
+    if len(sku) >= 50:
+        sku_slug = slugify(sku[:50])
+    else:
+        sku_slug = slugify(sku)
+    return (
+        sku_slug + "-" + "".join(random.choice("0123456789abcdef") for i in range(9))
+    )
+
+
+@receiver(pre_save, sender=Product)
+def product_pre_save(sender, instance, *args, **kwargs):
+    instance.sku = slugify_sku(instance.sku)

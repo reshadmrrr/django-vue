@@ -1,5 +1,7 @@
+from django.http import JsonResponse
 from django.views.generic import ListView, View, TemplateView
-from django.db.models import Q
+import json
+
 
 from product.models import Product, ProductVariant, ProductVariantPrice, Variant
     
@@ -51,3 +53,29 @@ class CreateProductView(TemplateView):
         context['product'] = True
         context['variants'] = list(variants.all())
         return context
+    
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        # print(data)
+        product = Product(title=data['title'], sku=data['sku'], description=data['description'])
+        product.save()
+        tags = {}
+        for item in data['product_variant']:
+            variant = Variant.objects.get(id=item['option'])
+            for tag in item['tags']:
+                product_variant = ProductVariant(variant_title=tag, variant=variant, product=product)
+                product_variant.save()
+                tags[tag] = product_variant
+        # product_variants = tags.values()
+        # print(product_variants)
+        # ProductVariant.objects.bulk_create(product_variants)
+        product_variant_prices = []
+        for item in data['product_variant_prices']:
+            product_variants = [None] * 3
+            splitted = item['title'].split('/')
+            for i in range(len(splitted)):
+                if splitted[i]: product_variants[i] = splitted[i]
+            product_variant_prices.append(ProductVariantPrice(product_variant_one=tags.get(product_variants[0], None), product_variant_two=tags.get(product_variants[1], None), product_variant_three=tags.get(product_variants[2], None), price=item['price'], stock=item['stock'], product=product))      
+        ProductVariantPrice.objects.bulk_create(product_variant_prices)
+        return JsonResponse({"data": 1})
+

@@ -101,6 +101,10 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import InputTag from 'vue-input-tag'
 import axios from 'axios'
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+axios.defaults.xsrfCookieName = "csrftoken";
+//axios.defaults.headers.post['Content-Type'] = 'multipart/form-data';
+
 
 export default {
   components: {
@@ -188,10 +192,11 @@ export default {
         product_variant: this.product_variant,
         product_variant_prices: this.product_variant_prices
       }
-
-
-      axios.post('/product', product).then(response => {
-        console.log(response.data);
+      
+      axios.post('/product/create/', product).then(response => {
+        if(response.data === 1) {
+          window.alert("Product Saved");
+        }
       }).catch(error => {
         console.log(error);
       })
