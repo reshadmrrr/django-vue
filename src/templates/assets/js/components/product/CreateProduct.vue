@@ -6,6 +6,7 @@
           <div class="card-body">
             <div class="form-group">
               <label for="">Product Name</label>
+              <input type="hidden" v-model="product_id">
               <input type="text" v-model="product_name" placeholder="Product Name" class="form-control">
             </div>
             <div class="form-group">
@@ -90,8 +91,8 @@
         </div>
       </div>
     </div>
-
-    <button @click="saveProduct" type="submit" class="btn btn-lg btn-primary">Save</button>
+    <button v-if="product_id" @click="updateProduct" type="submit" class="btn btn-lg btn-primary">Update</button>
+    <button v-else @click="saveProduct" type="submit" class="btn btn-lg btn-primary">Save</button>
     <button type="button" class="btn btn-secondary btn-lg">Cancel</button>
   </section>
 </template>
@@ -119,6 +120,7 @@ export default {
   },
   data() {
     return {
+      product_id : '',
       product_name: '',
       product_sku: '',
       description: '',
@@ -202,11 +204,62 @@ export default {
       })
 
       console.log(product);
+    },
+    updateProduct() {
+      let product = {
+        id: this.product_id,
+        title: this.product_name,
+        sku: this.product_sku,
+        description: this.description,
+        product_image: this.images,
+        product_variant: this.product_variant,
+        product_variant_prices: this.product_variant_prices
+      }
+      
+      axios.post(`/product/${product.id}/edit`, product).then(response => {
+        if(response.data === 1) {
+          window.alert("Product Updated");
+        }
+      }).catch(error => {
+        console.log(error);
+      })
+
+      console.log(product);
     }
 
 
   },
   mounted() {
+    if (document.getElementById("product").textContent.length) {
+      var product = JSON.parse(document.getElementById('product').textContent);
+      var product_variants = JSON.parse(document.getElementById('product_variants').textContent);
+      var product_variant_prices = JSON.parse(document.getElementById('product_variant_prices').textContent);
+      var product_variant = [];
+      var tag_dict = {};
+      for (var i = 0; i < product_variants.length; i++) {
+        var pv = product_variants[i];
+        if (!tag_dict[pv.variant]) {
+            tag_dict[pv.variant] = [];
+        }
+        tag_dict[pv.variant].push(pv.variant_title);
+      }
+      for (const [key, value] of Object.entries(tag_dict)) {
+        product_variant.push({
+          option: key,
+          tags: value
+        });
+      }
+      for (var i = 0; i < product_variant_prices.length; i++) {
+         var item = product_variant_prices[i];
+         item.title = item.product_variant_one + '/' + item.product_variant_two + '/' + item.product_variant_three  + '/';
+      }
+      this.product_id = product.id;
+      this.product_name = product.title;
+      this.product_sku = product.sku;
+      this.description = product.description;
+      this.product_variant = product_variant;
+      this.product_variant_prices = product_variant_prices;
+    }
     console.log('Component mounted.')
   }
 }

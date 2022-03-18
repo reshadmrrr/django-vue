@@ -28,8 +28,8 @@ class ProductVariant(TimeStampMixin):
     variant_title = models.CharField(max_length=255)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE, related_name='variant_variants')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_variants')
-
-
+    
+    
 class ProductVariantPrice(TimeStampMixin):
     product_variant_one = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, null=True,
                                             related_name='product_variant_one')

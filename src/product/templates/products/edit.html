@@ -1,0 +1,158 @@
+{% extends 'backend/base.html' %}
+
+{% block title %} Update Product {% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+   <h1 class="h3 mb-0 text-gray-800">Update Product</h1>
+   <a href="{% url 'product:create.product' %}" class="float-right btn btn-primary">All Product</a>
+</div>
+<div id="app">
+    <section product="">
+       <div class="row">
+          <div class="col-md-6">
+             <div class="card shadow mb-4">
+                <div class="card-body">
+                   <div class="form-group"><label for="">Product Name</label><input type="text" placeholder="Product Name" class="form-control" value="{{ product.title }}" ></div>
+                   <div class="form-group"><label for="">Product SKU</label><input type="text" placeholder="Product Name" class="form-control" value="{{ product.sku }}" ></div>
+                   <div class="form-group"><label for="">Description</label><textarea id="" cols="30" rows="4" class="form-control">{{ product.description }}</textarea></div>
+                </div>
+             </div>
+             <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                   <h6 class="m-0 font-weight-bold text-primary">Media</h6>
+                </div>
+                <div class="card-body border">
+                   <div id="dropzone" class="vue-dropzone dropzone dz-clickable">
+                      <!---->
+                      <div class="dz-default dz-message"><span>Drop files here to upload</span></div>
+                   </div>
+                </div>
+             </div>
+          </div>
+          <div class="col-md-6">
+             <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                   <h6 class="m-0 font-weight-bold text-primary">Variants</h6>
+                </div>
+                <div class="card-body">
+                    {% for product_variant in product_variants %}
+                    <div class="row">
+                     <div class="col-md-4">
+                     <div class="form-group">
+                         <label for="">Option</label>
+                         <select class="form-control">
+                         {% for variant in variants %}
+                             <option value="{{ variant.id }}" {% if product_variant.variant_id == variant.id %}selected{% endif %} >{{ variant.title }}</option>
+                         {% endfor %}
+                         </select>
+                     </div>
+                     </div>
+                     <div class="col-md-8">
+                     <div class="form-group">
+                         <label for="">.</label>
+                         <div class="vue-input-tag-wrapper form-control"><input placeholder="" type="text" class="new-tag" value=""></div>
+                     </div>
+                     </div>
+                 </div>
+                    {% endfor %}
+                </div>
+                <div class="card-footer"><button class="btn btn-primary">Add another option</button></div>
+                <div class="card-header text-uppercase">Preview</div>
+                <div class="card-body">
+                   <div class="table-responsive">
+                      <table class="table">
+                         <thead>
+                            <tr>
+                               <td>Variant</td>
+                               <td>Price</td>
+                               <td>Stock</td>
+                            </tr>
+                            {% for variant in product.product_variant_prices.all %}
+                            <tr><td>{{variant.product_variant_one.variant_title}}/{{variant.product_variant_two.variant_title}}/{{variant.product_variant_three.variant_title}}</td><td><input type="text" class="form-control" value="{{ variant.price }}"></td><td><input type="text" class="form-control" value="{{ variant.stock }}" ></td></tr>
+                            {% endfor %}
+                         </thead>
+                         <tbody></tbody>
+                      </table>
+                   </div>
+                </div>
+             </div>
+          </div>
+       </div>
+       <button type="submit" class="btn btn-lg btn-primary">Update</button><button type="button" class="btn btn-secondary btn-lg">Cancel</button>
+    </section>
+ </div>
+ 
+ {% endblock %}
+
+{% block script %}
+<script>
+   //  // it will push a new object into product variant
+   // function newVariant() {
+   //    let all_variants = this.variants.map(el => el.id)
+   //    let selected_variants = this.product_variant.map(el => el.option);
+   //    let available_variants = all_variants.filter(entry1 => !selected_variants.some(entry2 => entry1 == entry2))
+   //    // console.log(available_variants)
+
+   //    this.product_variant.push({
+   //      option: available_variants[0],
+   //      tags: []
+   //    })
+   //  }
+
+   //  // check the variant and render all the combination
+   //  function checkVariant() {
+   //    let tags = [];
+   //    this.product_variant_prices = [];
+   //    this.product_variant.filter((item) => {
+   //      tags.push(item.tags);
+   //    })
+
+   //    this.getCombn(tags).forEach(item => {
+   //      this.product_variant_prices.push({
+   //        title: item,
+   //        price: 0,
+   //        stock: 0
+   //      })
+   //    })
+   //  }
+
+   //  // combination algorithm
+   //  getCombn(arr, pre) {
+   //    pre = pre || '';
+   //    if (!arr.length) {
+   //      return pre;
+   //    }
+   //    let self = this;
+   //    let ans = arr[0].reduce(function (ans, value) {
+   //      return ans.concat(self.getCombn(arr.slice(1), pre + value + '/'));
+   //    }, []);
+   //    return ans;
+   //  },
+
+   //  // store product into database
+   //  saveProduct() {
+   //    let product = {
+   //      title: this.product_name,
+   //      sku: this.product_sku,
+   //      description: this.description,
+   //      product_image: this.images,
+   //      product_variant: this.product_variant,
+   //      product_variant_prices: this.product_variant_prices
+   //    }
+      
+   //    axios.post('/product/create/', product).then(response => {
+   //      if(response.data === 1) {
+   //        window.alert("Product Saved");
+   //      }
+   //    }).catch(error => {
+   //      console.log(error);
+   //    })
+
+   //    console.log(product);
+   //  }
+
+
+  
+</script>   
+{% endblock script %}
